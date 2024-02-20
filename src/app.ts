@@ -5,7 +5,7 @@ import { Survey } from "./entity/Survey";
 import { Option } from "./entity/Option";
 import { addOptionsToSurvey, getSurveyById, getSurveys } from "./services/Survey";
 import { isUserAuthorized } from "./middleware";
-import { authenticateUser, getUser } from "./services/User";
+import { authenticateUser, createUser } from "./services/User";
 import PocketBase from 'pocketbase'
 
 createConnection().then(async connection => {
@@ -18,6 +18,25 @@ createConnection().then(async connection => {
 
     app.get('/', (req, res) => {
         res.send('Hello World!');
+    });
+
+    app.post("/authenticate", async (req, res) => {
+        try {
+            const user = await authenticateUser({ ...req.body, pb });
+            return res.status(200).json(user);
+        } catch (err) {
+            return res.status(401).send("User not found");
+        }
+    });
+
+    app.post("/users", async (req, res) => {
+        try {
+            const user = await createUser({ ...req.body, pb });
+            await authenticateUser({ email: req.body.email, password: req.body.password, pb });
+            return res.status(201).json(user);
+        } catch (err) {
+            return res.status(401).send("Unauthorized");
+        }
     });
 
     app.get('/surveys', async (req, res) => {
