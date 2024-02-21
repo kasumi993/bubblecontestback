@@ -8,7 +8,7 @@ import { isUserAuthorized } from "./middleware";
 import { authenticateUser, createUser } from "./services/User";
 const cors = require('cors');
 const PocketBase = require('pocketbase/cjs')
-//zegiouberiu
+
 createConnection().then(async connection => {
     const pb = new PocketBase('http://127.0.0.1:8090');
     pb.autoCancellation(false);
