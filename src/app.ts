@@ -20,7 +20,7 @@ createConnection().then(async connection => {
     app.use(express.json());
 
     app.get('/', (req, res) => {
-        res.send('Hello World!');
+        return res.send('Hello World!');
     });
 
     app.post("/authenticate", async (req, res) => {
@@ -44,7 +44,7 @@ createConnection().then(async connection => {
 
     app.get('/surveys', async (req, res) => {
         const surveys = await getSurveys(connection);
-        res.status(204).json(surveys);
+        return res.status(204).json(surveys);
     });
 
     app.get('/surveys/:surveyId', async (req, res) => {
@@ -56,21 +56,21 @@ createConnection().then(async connection => {
     
         try{
             const survey = await getSurveyById(connection, surveyId);
-            res.status(200).json(survey);
+            return res.status(200).json(survey);
         }catch(err){
             const error = err as Error;
-            res.status(404).send(error.message);
+            return res.status(404).send(error.message);
         }
     });
 
     app.get('/options', async (req, res) => {
         const option = await connection.manager.find(Option);
-        res.status(200).json(option);
+        return res.status(200).json(option);
     });
 
     app.post('/surveys', async (req, res) => {
         const survey = await connection.manager.save(Survey, req.body);
-        res.status(201).json(survey);
+        return res.status(201).json(survey);
     });
 
     app.post('/surveys/:surveyId/options', async (req, res) => {
@@ -84,7 +84,7 @@ createConnection().then(async connection => {
             return res.status(201);
         }catch(err){
             const error = err as Error;
-            res.status(404).send(error.message);
+            return res.status(404).send(error.message);
         }
     });
 
