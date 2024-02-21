@@ -6,13 +6,16 @@ import { Option } from "./entity/Option";
 import { addOptionsToSurvey, getSurveyById, getSurveys } from "./services/Survey";
 import { isUserAuthorized } from "./middleware";
 import { authenticateUser, createUser } from "./services/User";
-import PocketBase from 'pocketbase'
+const cors = require('cors');
+const PocketBase = require('pocketbase/cjs')
 
 createConnection().then(async connection => {
     const pb = new PocketBase('http://127.0.0.1:8090');
     pb.autoCancellation(false);
     const app = express();
     const port = 3000;
+
+    app.use(cors())
 
     app.use(express.json());
 
@@ -41,7 +44,7 @@ createConnection().then(async connection => {
 
     app.get('/surveys', async (req, res) => {
         const surveys = await getSurveys(connection);
-        res.json(surveys);
+        res.status(204).json(surveys);
     });
 
     app.get('/surveys/:surveyId', async (req, res) => {
@@ -65,12 +68,12 @@ createConnection().then(async connection => {
         res.status(200).json(option);
     });
 
-    app.post('/surveys', isUserAuthorized, async (req, res) => {
+    app.post('/surveys', async (req, res) => {
         const survey = await connection.manager.save(Survey, req.body);
         res.status(201).json(survey);
     });
 
-    app.post('/surveys/:surveyId/options', isUserAuthorized, async (req, res) => {
+    app.post('/surveys/:surveyId/options', async (req, res) => {
         const surveyId = parseInt(req.params.surveyId);
         if (isNaN(surveyId)) {
             return res.status(400).send("L'ID du survey doit être un nombre.");
