@@ -43,8 +43,13 @@ createConnection().then(async connection => {
     });
 
     app.get('/surveys', async (req, res) => {
-        const surveys = await getSurveys(connection);
-        return res.status(204).json(surveys);
+        try{
+            const surveys = await getSurveys(connection);
+            return res.status(204).json(surveys);
+        }catch(err){
+            const error = err as Error;
+            return res.status(404).send(error.message);
+        }
     });
 
     app.get('/surveys/:surveyId', async (req, res) => {
