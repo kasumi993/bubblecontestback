@@ -8,6 +8,9 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - deploy    # New stage for deployment
 
+services:
+  - docker:dind
+
   # Job to build and push Docker image
 docker-build:
   stage: build
