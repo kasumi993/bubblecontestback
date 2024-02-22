@@ -93,6 +93,24 @@ createConnection().then(async connection => {
         }
     });
 
+    app.put("/options", canUserRead, async (req, res) => {
+        try{
+            const { options } = req.body;
+            await Promise.all(options.map(async (option: any) => {
+                const optionToUpdate = await connection.manager.findOne(Option, option.id);
+
+                if (!optionToUpdate) {
+                    throw new Error("Option not found");
+                }
+
+                optionToUpdate.choices = option.choose;
+                await connection.manager.save(optionToUpdate);
+            }));
+        }catch(err: any){
+            return res.status(400).send("An error occured: "+ err.message);
+        }
+    });
+
     app.listen(port, () => {
         console.log(`Serveur lancé sur http://localhost:${port}`);
     });
