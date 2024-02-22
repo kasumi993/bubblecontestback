@@ -4,7 +4,7 @@ import { createConnection } from "typeorm";
 import { Survey } from "./entity/Survey";
 import { Option } from "./entity/Option";
 import { addOptionsToSurvey, getSurveyById, getSurveys } from "./services/Survey";
-import { isUserAuthorized } from "./middleware";
+import { canUserEdit, canUserRead } from "./middleware";
 import { authenticateUser, createUser } from "./services/User";
 const cors = require('cors');
 const PocketBase = require('pocketbase/cjs')
@@ -38,11 +38,11 @@ createConnection().then(async connection => {
             await authenticateUser({ email: req.body.email, password: req.body.password, pb });
             return res.status(201).json(user);
         } catch (err) {
-            return res.status(401).send("Unauthorized");
+            return res.status(400).send("Unauthorized");
         }
     });
 
-    app.get('/surveys', async (req, res) => {
+    app.get('/surveys', canUserRead, async (req, res) => {
         try{
             const surveys = await getSurveys(connection);
             return res.status(200).json(surveys);
@@ -52,7 +52,7 @@ createConnection().then(async connection => {
         }
     });
 
-    app.get('/surveys/:surveyId', async (req, res) => {
+    app.get('/surveys/:surveyId', canUserRead, async (req, res) => {
         const surveyId = parseInt(req.params.surveyId);
 
         if (isNaN(surveyId)) {
@@ -68,17 +68,17 @@ createConnection().then(async connection => {
         }
     });
 
-    app.get('/options', async (req, res) => {
+    app.get('/options', canUserRead, async (req, res) => {
         const option = await connection.manager.find(Option);
         return res.status(200).json(option);
     });
 
-    app.post('/surveys', async (req, res) => {
+    app.post('/surveys', canUserEdit, async (req, res) => {
         const survey = await connection.manager.save(Survey, req.body);
         return res.status(201).json(survey);
     });
 
-    app.post('/surveys/:surveyId/options', async (req, res) => {
+    app.post('/surveys/:surveyId/options', canUserEdit, async (req, res) => {
         const surveyId = parseInt(req.params.surveyId);
         if (isNaN(surveyId)) {
             return res.status(400).send("L'ID du survey doit être un nombre.");
