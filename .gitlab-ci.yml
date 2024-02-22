@@ -4,13 +4,29 @@
 image: node:18.17.1
 
 stages:          # List of stages for jobs, and their order of execution
+  - build
   - test
+  - deploy    # New stage for deployment
+
+
+# Job to build and push Docker image
+docker-build:
+  stage: build
+  script:
+    - echo "Building Docker image..."
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+    - echo "Logging in to GitLab Docker registry..."
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "Pushing Docker image to GitLab registry..."
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  only:
+    - main    # Run this job only on pushes to the main branch
+
 
 # Job to run tests
 unit-test-job:
   stage: test
   before_script:
-    - apt-get update && apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
     # Install dependencies
     - npm install
 
