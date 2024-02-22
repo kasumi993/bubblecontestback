@@ -11,6 +11,9 @@ export const createUser = async  ({email, password, name, pb}: {email: string, p
         email,
         password,
         passwordConfirm: password,
+        canRead: true,
+        canEdit: false,
+        isPremium: false,
         name
     }
     const record = await pb.collection('users').create(data);
