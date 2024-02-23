@@ -6,6 +6,7 @@ import { Option } from "./entity/Option";
 import { addOptionsToSurvey, getSurveyById, getSurveys } from "./services/Survey";
 import { canUserEdit, canUserRead } from "./middleware";
 import { authenticateUser, createUser } from "./services/User";
+import { jwtDecode } from "jwt-decode";
 const cors = require('cors');
 const PocketBase = require('pocketbase/cjs')
 
@@ -23,7 +24,7 @@ createConnection().then(async connection => {
         return res.send('Hello World!');
     });
 
-    app.post("/authenticate", async (req, res) => {
+    app.post("/authenticate",  async (req, res) => {
         try {
             const user = await authenticateUser({ ...req.body, pb });
             return res.status(200).json(user);
@@ -60,7 +61,14 @@ createConnection().then(async connection => {
         }
     
         try{
+            const token = req.headers.autorization as string;
+            const decoded = jwtDecode(token) as any;
+            const user = await pb.collection('users').getOne(decoded.id);
             const survey = await getSurveyById(connection, surveyId);
+            console.log(survey, user)
+            if (survey.premium && !user.isPremium) {
+                return res.status(403).send("You are not allowed to read this survey");
+            }
             return res.status(200).json(survey);
         }catch(err){
             const error = err as Error;
@@ -85,6 +93,8 @@ createConnection().then(async connection => {
         }
 
         try{
+
+            
             await addOptionsToSurvey(connection, surveyId, req.body);
             return res.status(201);
         }catch(err){
