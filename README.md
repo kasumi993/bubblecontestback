@@ -48,7 +48,8 @@ Pour exécuter les tests manuellement, utilisez les commandes suivantes dans vot
 
 - **Analyse SonarQube** : Assurez-vous que SonarQube est correctement configuré et lancé, puis exécutez : `npm run sonar`
 
-
+## Branche par défaut
+Veuillez vous placer sur la branche develop plutôt que main
 
 
 
