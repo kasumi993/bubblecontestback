@@ -6,7 +6,7 @@ export const getSurveys = async (connection: Connection) => {
     return connection.manager.find(Survey);
 }
 
-export const getSurveyById = async (connection: Connection, surveyId: number) => {
+export const getSurveyById = async (connection: any, surveyId: number) => {
     const survey = await connection.manager.findOne(Survey, {
         where: { survey_id: surveyId }, 
         relations: ["options"], 
@@ -19,7 +19,16 @@ export const getSurveyById = async (connection: Connection, surveyId: number) =>
     return survey;
 }
 
-export const addOptionsToSurvey = async (connection: Connection, surveyId: number, optionData: Option[]) => {
+export const getSurveyByName = async (connection: any, surveyName: string) => {
+    const survey = await connection.manager.findOne(Survey, {
+        where: { title: surveyName }, 
+        relations: ["options"], 
+    });
+
+    return survey;
+}
+
+export const addOptionsToSurvey = async (connection: any, surveyId: number, optionData: any[]) => {
     const survey = await connection.manager.findOne(Survey, { where: { survey_id: surveyId } });
     if (!survey) {
         throw new Error("Survey non trouvé.");

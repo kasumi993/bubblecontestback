@@ -7,11 +7,8 @@ import { addOptionsToSurvey, getSurveyById, getSurveys } from "./services/Survey
 import { canUserEdit, canUserRead } from "./middleware";
 import { authenticateUser, createUser } from "./services/User";
 const cors = require('cors');
-const PocketBase = require('pocketbase/cjs')
 
 createConnection().then(async connection => {
-    const pb = new PocketBase('http://127.0.0.1:8090');
-    pb.autoCancellation(false);
     const app = express();
     const port = 3000;
 
@@ -25,7 +22,7 @@ createConnection().then(async connection => {
 
     app.post("/authenticate", async (req, res) => {
         try {
-            const user = await authenticateUser({ ...req.body, pb });
+            const user = await authenticateUser({ ...req.body });
             return res.status(200).json(user);
         } catch (err) {
             return res.status(401).send("User not found");
@@ -34,8 +31,8 @@ createConnection().then(async connection => {
 
     app.post("/users", async (req, res) => {
         try {
-            const user = await createUser({ ...req.body, pb });
-            await authenticateUser({ email: req.body.email, password: req.body.password, pb });
+            const user = await createUser({ ...req.body });
+            await authenticateUser({ email: req.body.email, password: req.body.password });
             return res.status(201).json(user);
         } catch (err) {
             return res.status(400).send("Unauthorized");
