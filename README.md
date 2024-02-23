@@ -24,7 +24,7 @@ Pour lancer l'API "Bubbleback", suivez ces étapes simples :
 
 1. **Clonage du dépôt Git** : Clonez le dépôt de l'API "Bubbleback" sur votre machine locale.
 `
-`git clone https://gitlab.com/bubbleproject/bubbleback.git`
+` git clone https://gitlab.com/bubbleproject/bubbleback.git `
 
 
 2. **Lancement de l'API** : Ouvrez un terminal à la racine du dossier cloné et lancez l'API à l'aide de Docker Compose.
@@ -36,7 +36,7 @@ Cette commande construit et démarre les conteneurs nécessaires pour l'API, y c
 
 ## Tests
 
-Les tests au sein de l'API "Bubbleback" sont essentiels pour garantir la qualité et la stabilité de l'API. Les tests incluent :
+Les tests sont effectués via GitLab CI au moment des pushs. Ils incluent :
 
 - **Tests unitaires avec Jest** : Pour valider chaque partie du code indépendamment des autres.
 
