@@ -24,24 +24,12 @@ docker-build:
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   only:
     - main    # Run this job only on pushes to the main branch
+    - develop
 
 
 # Job to run tests
 unit-test-job:
-  stage: test
-  before_script:
-    # Install dependencies
+  stage: test  
+  script:
     - npm install
-
-  script:
-    - npm run dev&
-    # Run unit tests with Vitest
     - npm run test:unit
-
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
-
